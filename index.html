@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Save the Date</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="stars"></div>
+
+<div class="cloud cloud1"></div>
+<div class="cloud cloud2"></div>
+
+<section class="hero">
+
+  <!-- MAPA REAL -->
+  <img class="map" src="images/world.svg">
+
+  <div class="sunset"></div>
+
+  <div class="overlay"></div>
+
+  <div class="content">
+
+    <p class="mini-title fade">
+      SAVE THE DATE
+    </p>
+
+    <h1 class="fade delay1">
+      Judit & Guillermo
+    </h1>
+
+    <!-- LINEA -->
+    <svg class="flight-svg" viewBox="0 0 1000 500">
+
+      <path
+    	id="flightPath"
+    	d="M290 445 C 340 180, 420 20, 490 140"
+    	stroke="rgba(255,255,255,.7)"
+    	stroke-width="2"
+    	fill="none"
+    	stroke-dasharray="8 10"
+       />
+
+    </svg>
+
+    <svg class="plane-svg" viewBox="0 0 1000 500" preserveAspectRatio="none">
+
+     <text font-size="30" fill="white">
+       <textPath href="#flightPath" startOffset="-60%">
+         ✈
+         <animate
+           attributeName="startOffset"
+           from="0%"
+           to="100%"
+           dur="8s"
+           repeatCount="indefinite"
+         />
+       </textPath>
+     </text>
+
+    </svg>
+
+    <!-- ARG -->
+    <div class="point argentina">
+      <span>Buenos Aires</span>
+    </div>
+
+    <!-- BCN -->
+    <div class="point barcelona pulse" id="barcelonaPoint">
+      <span>Barcelona</span>
+    </div>
+
+  </div>
+
+</section>
+
+<div class="popup" id="popup">
+
+  <div class="popup-content">
+
+    <img src="images/image1.png">
+
+    <div class="popup-text">
+
+      <p class="popup-mini">
+        NOS CASAMOS
+      </p>
+
+      <h2>
+        Judit & Guillermo
+      </h2>
+
+      <p class="popup-date">
+        17 Julio 2027
+      </p>
+
+      <a
+        class="rsvp-button"
+        href="https://forms.gle/mNn5QGhmMoPXfbsSA"
+        target="_blank"
+      >
+        Confirmar asistencia
+      </a>
+
+      <button id="closePopup">
+        Cerrar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
