@@ -14,6 +14,7 @@ body{
 .hero{
   position:relative;
   height:100vh;
+  min-height:100svh;
   overflow:hidden;
 }
 
@@ -166,8 +167,9 @@ position:absolute;
 
 h1{
   font-family:'Cormorant Garamond',serif;
-  font-size:7rem;
+  font-size:clamp(3.5rem,10vw,7rem);
   font-weight:300;
+  line-height:1;
   animation:glow 5s ease-in-out infinite;
 }
 
@@ -183,8 +185,9 @@ h1{
 
 .subtitle{
   margin-top:15px;
-  font-size:1.5rem;
+  font-size:clamp(1rem,3vw,1.5rem);
   color:#dbeafe;
+  padding:0 20px;
 }
 
 .date-box{
@@ -390,7 +393,7 @@ h1{
 }
 
 .popup-content{
-  width:950px;
+  width:min(900px,95vw);
   max-width:100%;
   background:white;
   color:#0f172a;
@@ -473,6 +476,104 @@ h1{
 
   .countdown div{
     min-width:120px;
+  }
+
+}
+
+
+/* ========================= */
+/* MOBILE ULTRA OPTIMIZATION */
+/* ========================= */
+
+html{
+  scroll-behavior:smooth;
+}
+
+img{
+  max-width:100%;
+  display:block;
+}
+
+body{
+  -webkit-font-smoothing:antialiased;
+}
+
+@media (max-width:768px){
+
+  .content{
+    padding-top:100px;
+  }
+
+  .plane{
+    font-size:28px;
+  }
+
+  .point span{
+    font-size:.7rem;
+    letter-spacing:1px;
+  }
+
+  .countdown{
+    gap:15px;
+  }
+
+  .countdown div{
+    min-width:90px;
+    padding:20px;
+  }
+
+  .countdown span{
+    font-size:2rem;
+  }
+
+  .gallery{
+    padding:20px;
+  }
+
+  .gallery img{
+    height:320px;
+  }
+
+  .popup-text{
+    padding:30px 20px;
+  }
+
+  .popup-text h2{
+    font-size:3rem;
+  }
+
+}
+
+@media (max-width:480px){
+
+  .mini-title{
+    font-size:.7rem;
+    letter-spacing:6px;
+  }
+
+  .date-box{
+    padding:12px 24px;
+    font-size:.9rem;
+  }
+
+  .countdown-section h2{
+    font-size:3rem;
+  }
+
+  .location h2{
+    font-size:3rem;
+  }
+
+  .message p{
+    font-size:1.3rem;
+  }
+
+}
+
+@supports (-webkit-touch-callout: none) {
+
+  .hero{
+    min-height:100svh;
   }
 
 }
