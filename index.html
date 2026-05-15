@@ -18,97 +18,108 @@
         body {
             background: var(--primary-bg);
             color: white;
-            overflow-x: hidden;
+            overflow: hidden; /* Evita scroll innecesario en el hero */
             font-family: 'Montserrat', sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- FONDO DE ESTRELLAS --- */
-        .stars {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 20% 30%, white 1px, transparent 2px);
-            background-size: 300px 300px;
-            opacity: 0.3;
-            z-index: 0;
-        }
-
-        /* --- HERO RESPONSIVO --- */
         .hero {
             position: relative;
             width: 100%;
             height: 100vh;
             height: 100svh;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
 
-        /* Este contenedor bloquea la proporción para que nada se mueva de su sitio */
-        .map-container {
-            position: relative;
-            width: 100%;
-            max-width: 1400px;
-            aspect-ratio: 16 / 9; /* Mantiene la proporción del mapa */
+        /* FONDO ESTRELLAS */
+        .stars {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, white 0.5px, transparent 1.5px);
+            background-size: 200px 200px;
+            opacity: 0.2;
+            z-index: 0;
         }
 
-        @media (max-aspect-ratio: 16/9) {
-            .map-container { width: auto; height: 100%; }
-        }
-
-        .map-img {
+        /* EL TRUCO PARA EL CORTE EN MÓVIL:
+           En lugar de object-fit: contain, usamos un mapa que se expande.
+           Para que no se corte Buenos Aires, centraremos la imagen de forma que el Atlántico sea el eje.
+        */
+        .map-wrapper {
             position: absolute;
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            opacity: 0.25;
             z-index: 1;
         }
 
-        /* --- SVG DEL AVIÓN (Trayectoria Argentina -> Barcelona) --- */
-        .flight-system {
-            position: absolute;
-            inset: 0;
+        .map-img {
             width: 100%;
             height: 100%;
-            z-index: 3;
-            pointer-events: none;
+            object-fit: cover; /* Para que llene todo el móvil */
+            object-position: 45% center; /* Ajustamos para que se vea más América del Sur en móvil */
+            opacity: 0.25;
+            filter: brightness(0.8) contrast(1.2);
         }
 
-        /* --- CONTENIDO DE TEXTO --- */
-        .hero-content {
+        /* SINCRONIZACIÓN SVG + MAPA:
+           Para que los puntos no se muevan de la imagen al estirarse (cover), 
+           el SVG debe tener las mismas dimensiones y el mismo object-fit.
+        */
+        .interactive-layer {
             position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            text-align: center;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        /* Usamos un contenedor con la misma proporción que el mapa original (ej. 16:9)
+           centrado de la misma forma que el object-fit del mapa.
+        */
+        .coordinate-system {
+            position: absolute;
+            top: 50%;
+            left: 45%; /* Debe coincidir con el object-position del mapa */
+            width: 177.78vh; /* 16/9 de la altura */
+            height: 100vh;
+            transform: translate(-50%, -50%);
             pointer-events: none;
         }
 
-        h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2.5rem, 10vw, 7rem);
-            font-weight: 300;
+        /* Ajustes para pantallas muy anchas (Desktop) */
+        @media (min-aspect-ratio: 16/9) {
+            .coordinate-system {
+                width: 100vw;
+                height: 56.25vw;
+                left: 50%; /* En desktop centramos normal */
+            }
+            .map-img { object-position: center; }
+        }
+
+        /* SVG Trayectoria */
+        .flight-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        /* PUNTOS GEOGRÁFICOS */
+        .point {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
             pointer-events: auto;
         }
 
-        /* --- PUNTOS GEOGRÁFICOS --- */
-        .point {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            z-index: 20;
-            transform: translate(-50%, -50%); /* Centrado perfecto */
-        }
-
-        /* Coordenadas precisas sobre el mapa 16:9 */
-        .argentina { left: 31%; top: 78%; background: var(--accent-pink); }
-        .barcelona { left: 49%; top: 36%; background: var(--accent-green); cursor: pointer; pointer-events: auto; }
+        /* Coordenadas en el sistema 16:9 */
+        .argentina { left: 29%; top: 78%; background: var(--accent-pink); }
+        .barcelona { left: 49%; top: 38%; background: var(--accent-green); cursor: pointer; }
 
         .point span {
             position: absolute;
@@ -116,7 +127,7 @@
             left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             letter-spacing: 2px;
             text-transform: uppercase;
         }
@@ -128,7 +139,29 @@
             100% { box-shadow: 0 0 0 0 rgba(52,211,153, 0); }
         }
 
-        /* --- POPUP --- */
+        /* TEXTO CENTRAL */
+        .content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 10vw, 7rem);
+            font-weight: 300;
+            margin-top: 10px;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* POPUP */
         .popup {
             position: fixed;
             inset: 0;
@@ -174,32 +207,38 @@
 <div class="stars"></div>
 
 <section class="hero">
-    <div class="map-container">
+    <div class="map-wrapper">
         <img src="images/world.svg" class="map-img">
-        
-        <svg class="flight-system" viewBox="0 0 1000 562.5" preserveAspectRatio="xMidYMid meet">
-            <path id="flightPath" 
-                  d="M310,438 Q400,150 490,202" 
-                  fill="none" 
-                  stroke="rgba(255,255,255,0.3)" 
-                  stroke-width="2" 
-                  stroke-dasharray="5,5" />
+    </div>
+
+    <!-- Sistema de coordenadas sincronizado con el mapa 'cover' -->
+    <div class="interactive-layer">
+        <div class="coordinate-system">
             
-            <text font-size="24" fill="white">
-                <textPath href="#flightPath" startOffset="0%">
-                    &#9992;
-                    <animate attributeName="startOffset" from="0%" to="100%" dur="10s" repeatCount="indefinite" />
-                </textPath>
-            </text>
-        </svg>
+            <svg class="flight-svg" viewBox="0 0 1000 562.5">
+                <path id="flightPath" 
+                      d="M290,438 Q400,160 490,212" 
+                      fill="none" 
+                      stroke="rgba(255,255,255,0.3)" 
+                      stroke-width="2" 
+                      stroke-dasharray="5,5" />
+                
+                <text font-size="24" fill="white">
+                    <textPath href="#flightPath" startOffset="0%">
+                        &#9992;
+                        <animate attributeName="startOffset" from="0%" to="100%" dur="10s" repeatCount="indefinite" />
+                    </textPath>
+                </text>
+            </svg>
 
-        <div class="point argentina"><span>Buenos Aires</span></div>
-        <div class="point barcelona pulse" id="barcelonaPoint"><span>Barcelona</span></div>
-
-        <div class="hero-content">
-            <p style="letter-spacing: 10px; opacity: 0.7;">SAVE THE DATE</p>
-            <h1>Judit & Guillermo</h1>
+            <div class="point argentina"><span>Buenos Aires</span></div>
+            <div class="point barcelona pulse" id="barcelonaPoint"><span>Barcelona</span></div>
         </div>
+    </div>
+
+    <div class="content">
+        <p style="letter-spacing: 8px; opacity: 0.8; font-size: 0.8rem;">SAVE THE DATE</p>
+        <h1>Judit & Guillermo</h1>
     </div>
 </section>
 
