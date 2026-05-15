@@ -1,131 +1,230 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save the Date - Judit & Guillermo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #020617;
+            --accent-pink: #fb7185;
+            --accent-green: #34d399;
+        }
 
-  <title>Save the Date</title>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <link rel="stylesheet" href="style.css">
+        body {
+            background: var(--primary-bg);
+            color: white;
+            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        /* --- FONDO DE ESTRELLAS --- */
+        .stars {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, white 1px, transparent 2px);
+            background-size: 300px 300px;
+            opacity: 0.3;
+            z-index: 0;
+        }
 
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+        /* --- HERO RESPONSIVO --- */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            height: 100svh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Este contenedor bloquea la proporción para que nada se mueva de su sitio */
+        .map-container {
+            position: relative;
+            width: 100%;
+            max-width: 1400px;
+            aspect-ratio: 16 / 9; /* Mantiene la proporción del mapa */
+        }
+
+        @media (max-aspect-ratio: 16/9) {
+            .map-container { width: auto; height: 100%; }
+        }
+
+        .map-img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0.25;
+            z-index: 1;
+        }
+
+        /* --- SVG DEL AVIÓN (Trayectoria Argentina -> Barcelona) --- */
+        .flight-system {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* --- CONTENIDO DE TEXTO --- */
+        .hero-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 10vw, 7rem);
+            font-weight: 300;
+            pointer-events: auto;
+        }
+
+        /* --- PUNTOS GEOGRÁFICOS --- */
+        .point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            z-index: 20;
+            transform: translate(-50%, -50%); /* Centrado perfecto */
+        }
+
+        /* Coordenadas precisas sobre el mapa 16:9 */
+        .argentina { left: 31%; top: 78%; background: var(--accent-pink); }
+        .barcelona { left: 49%; top: 36%; background: var(--accent-green); cursor: pointer; pointer-events: auto; }
+
+        .point span {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(52,211,153, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(52,211,153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52,211,153, 0); }
+        }
+
+        /* --- POPUP --- */
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: white;
+            color: #0f172a;
+            width: min(800px, 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .popup-content { grid-template-columns: 1fr; }
+            .popup-img { height: 200px; }
+        }
+
+        .popup-img { width: 100%; height: 100%; object-fit: cover; }
+        .popup-text { padding: 40px; text-align: center; }
+
+        .rsvp-button {
+            background: var(--primary-bg);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="stars"></div>
 
-<div class="cloud cloud1"></div>
-<div class="cloud cloud2"></div>
-
 <section class="hero">
+    <div class="map-container">
+        <img src="images/world.svg" class="map-img">
+        
+        <svg class="flight-system" viewBox="0 0 1000 562.5" preserveAspectRatio="xMidYMid meet">
+            <path id="flightPath" 
+                  d="M310,438 Q400,150 490,202" 
+                  fill="none" 
+                  stroke="rgba(255,255,255,0.3)" 
+                  stroke-width="2" 
+                  stroke-dasharray="5,5" />
+            
+            <text font-size="24" fill="white">
+                <textPath href="#flightPath" startOffset="0%">
+                    &#9992;
+                    <animate attributeName="startOffset" from="0%" to="100%" dur="10s" repeatCount="indefinite" />
+                </textPath>
+            </text>
+        </svg>
 
-  <!-- MAPA REAL -->
-  <img class="map" src="images/world.svg">
+        <div class="point argentina"><span>Buenos Aires</span></div>
+        <div class="point barcelona pulse" id="barcelonaPoint"><span>Barcelona</span></div>
 
-  <div class="sunset"></div>
-
-  <div class="overlay"></div>
-
-  <div class="content">
-
-    <p class="mini-title fade">
-      SAVE THE DATE
-    </p>
-
-    <h1 class="fade delay1">
-      Judit & Guillermo
-    </h1>
-
-    <!-- LINEA -->
-    <svg class="flight-svg" viewBox="0 0 1000 500">
-
-      <path
-    	id="flightPath"
-      d="M290 445 C 340 180, 420 20, 490 140"  
-    	stroke="rgba(255,255,255,.7)"
-    	stroke-width="2"
-    	fill="none"
-    	stroke-dasharray="8 10"
-       />
-
-    </svg>
-
-    <svg class="plane-svg" viewBox="0 0 1000 500" preserveAspectRatio="none">
-
-     <text font-size="30" fill="white">
-       <textPath href="#flightPath" startOffset="-60%">
-         &#9992;
-         <animate
-           attributeName="startOffset"
-           from="0%"
-           to="100%"
-           dur="8s"
-           repeatCount="indefinite"
-         />
-       </textPath>
-     </text>
-
-    </svg>
-
-    <!-- ARG -->
-    <div class="point argentina">
-      <span>Buenos Aires</span>
+        <div class="hero-content">
+            <p style="letter-spacing: 10px; opacity: 0.7;">SAVE THE DATE</p>
+            <h1>Judit & Guillermo</h1>
+        </div>
     </div>
-
-    <!-- BCN -->
-    <div class="point barcelona pulse" id="barcelonaPoint">
-      <span>Barcelona</span>
-    </div>
-
-  </div>
-
 </section>
 
 <div class="popup" id="popup">
-
-  <div class="popup-content">
-
-    <img src="images/image1.png">
-
-    <div class="popup-text">
-
-      <p class="popup-mini">
-        NOS CASAMOS
-      </p>
-
-      <h2>
-        Judit & Guillermo
-      </h2>
-
-      <p class="popup-date">
-        17 Julio 2027
-      </p>
-
-      <a
-        class="rsvp-button"
-        href="https://forms.gle/mNn5QGhmMoPXfbsSA"
-        target="_blank"
-      >
-        Confirmar asistencia
-      </a>
-
-      <button id="closePopup">
-        Cerrar
-      </button>
-
+    <div class="popup-content">
+        <img src="images/image1.png" class="popup-img">
+        <div class="popup-text">
+            <h2>¡Nos casamos!</h2>
+            <p>17 de Julio de 2027</p>
+            <a href="https://forms.gle/mNn5QGhmMoPXfbsSA" target="_blank" class="rsvp-button">Confirmar asistencia</a>
+            <br>
+            <button id="closePopup" style="margin-top:20px; background:none; border:none; cursor:pointer; text-decoration:underline;">Cerrar</button>
+        </div>
     </div>
-
-  </div>
-
 </div>
 
-<script src="script.js"></script>
+<script>
+    const point = document.getElementById("barcelonaPoint");
+    const popup = document.getElementById("popup");
+    const closePopup = document.getElementById("closePopup");
+
+    point.addEventListener("click", () => { popup.style.display = "flex"; });
+    closePopup.addEventListener("click", () => { popup.style.display = "none"; });
+    window.addEventListener("click", (e) => { if(e.target === popup) popup.style.display = "none"; });
+</script>
 
 </body>
-
 </html>
