@@ -3,302 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Save the Date - Judit & Guillermo</title>
+    <title>Invitación Judit & Guillermo</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
     <style>
+        /* CONFIGURACIÓN BASE ATÓMICA */
         :root {
-            --space-blue: #020617;
-            --accent-pink: #fb7185;
-            --accent-green: #34d399;
+            --bg-color: #020617;
+            --pink: #fb7185;
+            --green: #34d399;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body, html {
-            background-color: var(--space-blue);
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
             color: white;
-            width: 100%; height: 100%;
-            overflow: hidden;
             font-family: 'Montserrat', sans-serif;
+            overflow: hidden; /* Evita cualquier scroll */
         }
 
-        /* --- CAPA 1: FONDO TOTAL (Estrellas + Sunset) --- */
-        .background-master {
+        /* CAPA 1: FONDO UNIFICADO (Estrellas + Mapa + Sunset) */
+        .master-background {
             position: fixed;
             inset: 0;
-            background: linear-gradient(to bottom, #020617 0%, #1e1b4b 60%, #4338ca44 80%, #fb923c33 100%);
-            z-index: 0;
-        }
-
-        .stars {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(1px 1px at 20px 30px, white, transparent),
-                        radial-gradient(1.5px 1.5px at 150px 80px, white, transparent);
-            background-size: 250px 250px;
-            opacity: 0.4;
-        }
-
-        /* --- CAPA 2: EL MAPA --- */
-        .map-layer {
-            position: absolute;
-            inset: 0;
             z-index: 1;
-            /* El truco del 45% para que en móvil se vea el Atlántico */
-            background: url('images/world.svg') no-repeat 45% center / cover;
-            opacity: 0.25;
-            filter: brightness(1.2) contrast(1.1);
+            /* Evita que el mapa se repita en Windows */
+            background-image: 
+                linear-gradient(to bottom, rgba(2, 6, 23, 0.5), rgba(2, 6, 23, 0.8)),
+                url('images/world.svg');
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            opacity: 0.3;
         }
 
-        /* --- CAPA 3: TEXTO (CENTRADO ABSOLUTO) --- */
-        .text-center-wrapper {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            width: 100%;
-            z-index: 10; /* El texto está arriba para que se lea bien */
+        /* CAPA 2: DEGRADADO SUNSET (Para asegurar que se vea el efecto) */
+        .sunset-glow {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            background: linear-gradient(to bottom, transparent 50%, rgba(251, 146, 60, 0.2) 100%);
             pointer-events: none;
         }
 
-        h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2.5rem, 10vw, 6.5rem);
-            font-weight: 300;
-            text-shadow: 0 0 40px rgba(0,0,0,0.9);
-            margin: 10px 0;
+        /* CAPA 3: CONTENEDOR DE CONTENIDO (FLEXBOX PARA MAC) */
+        .main-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Centrado vertical infalible */
+            z-index: 10;
+            text-align: center;
         }
 
-        .save-date { letter-spacing: 10px; font-size: 0.8rem; opacity: 0.8; }
-        .date-line { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; }
+        .text-group {
+            pointer-events: none;
+            z-index: 15;
+        }
 
-        /* --- CAPA 4: SVG (AVIÓN Y PUNTOS) --- */
+        .text-group h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 12vw, 7rem);
+            font-weight: 300;
+            line-height: 1;
+            margin: 15px 0;
+            text-shadow: 0 0 30px rgba(0,0,0,1);
+        }
+
+        .mini-tag { letter-spacing: 10px; font-size: 0.8rem; opacity: 0.8; }
+        .date-tag { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; opacity: 0.9; }
+
+        /* CAPA 4: SVG DEL AVIÓN (CUBRE TODA LA PANTALLA) */
         .svg-overlay {
             position: absolute;
             inset: 0;
-            z-index: 5; /* El avión pasa por detrás del texto si quieres, o por delante si lo subes */
+            z-index: 20; /* El avión vuela sobre el texto */
             pointer-events: none;
         }
 
-        /* Crucial para que los puntos no se muevan del mapa en iPhone */
         .svg-overlay svg {
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
+            /* 'slice' para que los puntos no se muevan de su sitio en el mapa */
             preserveAspectRatio: xMidYMid slice;
         }
 
-        /* Estilos de puntos y etiquetas */
-        .label { font-size: 14px; fill: white; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
-
-        /* --- POPUP --- */
-        .popup {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000; padding: 20px;
-        }
-        .popup-content {
-            background: white; color: #0f172a; width: min(800px, 100%);
-            border-radius: 24px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr;
-        }
-        @media (max-width: 768px) { .popup-content { grid-template-columns: 1fr; } }
-        .popup-img { width: 100%; height: 100%; object-fit: cover; }
-        .popup-text { padding: 40px; text-align: center; }
-        .rsvp-btn {
-            background: var(--space-blue); color: white; padding: 12px 30px;
-            border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 20px;
-            pointer-events: auto;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="background-master">
-        <div class="stars"></div>
-    </div>
-
-    <div class="map-layer"></div>
-
-    <div class="text-center-wrapper">
-        <p class="save-date">SAVE THE DATE</p>
-        <h1>Judit & Guillermo</h1>
-        <p class="date-line">17 de Julio de 2027</p>
-    </div>
-
-    <div class="svg-overlay">
-        <svg viewBox="0 0 1000 500">
-            <path id="flightPath" d="M280,420 Q400,80 520,180" fill="none" />
-            
-            <path d="M280,420 Q400,80 520,180" fill="none" 
-                  stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="5,10" />
-
-            <g>
-                <path d="M-12,-8 L12,0 L-12,8 L-8,0 Z" fill="white" />
-                
-                <animateMotion dur="12s" repeatCount="indefinite" rotate="auto">
-                    <mpath href="#flightPath" />
-                </animateMotion>
-            </g>
-
-            <circle cx="280" cy="420" r="5" fill="#fb7185" />
-            <text x="280" y="445" text-anchor="middle" class="label">Buenos Aires</text>
-
-            <g id="bcnGroup" style="cursor:pointer; pointer-events:all;">
-                <circle cx="520" cy="180" r="12" fill="rgba(52,211,153,0.3)">
-                    <animate attributeName="r" values="7;12;7" dur="2s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="520" cy="180" r="6" fill="#34d399" />
-                <text x="520" y="205" text-anchor="middle" class="label">Barcelona</text>
-            </g>
-        </svg>
-    </div>
-
-    <div class="popup" id="popup">
-        <div class="popup-content">
-            <img src="images/image1.png" class="popup-img">
-            <div class="popup-text">
-                <h2>¡Nos casamos!</h2>
-                <p>17 de Julio de 2027</p>
-                <a href="https://forms.gle/mNn5QGhmMoPXfbsSA" target="_blank" class="rsvp-btn">Confirmar asistencia</a>
-                <br>
-                <button id="closePopup" style="margin-top:20px; background:none; border:none; cursor:pointer; text-decoration:underline;">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const bcn = document.getElementById("bcnGroup");
-        const popup = document.getElementById("popup");
-        const closePopup = document.getElementById("closePopup");
-
-        bcn.addEventListener("click", () => { popup.style.display = "flex"; });
-        closePopup.addEventListener("click", () => { popup.style.display = "none"; });
-        window.addEventListener("click", (e) => { if(e.target === popup) popup.style.display = "none"; });
-    </script>
-</body>
-</html>        .hero {
-            position: relative; width: 100vw; height: 100vh; height: 100svh;
-            display: flex; align-items: center; justify-content: center;
-            z-index: 1;
-            /* Sunset suave de fondo */
-            background: linear-gradient(to bottom, #020617 0%, #1e1b4b 60%, rgba(255, 145, 77, 0.15) 100%);
-        }
-
-        /* --- CAPA 1: MAPA DE FONDO --- */
-        .map-overlay {
-            position: absolute; inset: 0; z-index: 1;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .map-img {
-            width: 100%; height: 100%;
-            object-fit: cover; /* Mapa llena la pantalla */
-            object-position: 45% center; /* Centra Atlántico */
-            opacity: 0.25; filter: brightness(1.2) contrast(1.1);
-        }
-
-        /* --- CAPA 2: SVG INTEGRAL (Contiene todo) --- */
-        .svg-container {
-            position: absolute; inset: 0; z-index: 10;
-            width: 100%; height: 100%;
-            pointer-events: none;
-        }
-        
-        .master-svg {
-            width: 100%; height: 100%;
-            /* 'slice' asegura que el lienzo SVG se recorta igual que el mapa 'cover' */
-            preserveAspectRatio: xMidYMid slice;
-        }
-
-        /* --- ESTILOS TEXTO SVG (¡ESTO ES LA SOLUCIÓN!) --- */
-        .svg-text-group { text-anchor: middle; pointer-events: none; }
-        
-        /* Save the Date */
-        .svg-mini-title {
-            font-size: 14px; fill: rgba(255,255,255,0.7);
-            font-family: 'Montserrat', sans-serif;
-            letter-spacing: 8px; text-transform: uppercase;
-        }
-
-        /* Nombres */
-        .svg-h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 80px; /* Tamaño base interno, escala automáticamente */
-            font-weight: 300; fill: white;
-            text-shadow: 0 0 30px rgba(0,0,0,0.8);
-        }
-
-        /* Fecha */
-        .svg-date {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 32px; fill: rgba(255,255,255,0.9);
+        /* Estilo de los puntos para que no se achiquen en iPhone */
+        .city-label {
+            font-size: 14px;
+            fill: white;
             letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 500;
         }
 
-        /* Nombres de ciudades */
-        .svg-label { font-size: 14px; fill: white; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
-
-        /* --- POPUP (Sin cambios) --- */
+        /* POPUP */
         .popup {
             position: fixed; inset: 0; background: rgba(0,0,0,0.9);
             display: none; justify-content: center; align-items: center;
             z-index: 1000; padding: 20px;
         }
         .popup-content {
-            background: white; color: #0f172a; width: min(800px, 100%);
-            border-radius: 24px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr;
+            background: white; color: #0f172a; width: min(600px, 90%);
+            border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;
         }
-        @media (max-width: 768px) { .popup-content { grid-template-columns: 1fr; } .popup-img { height: 180px; } }
-        .popup-img { width: 100%; height: 100%; object-fit: cover; }
+        .popup-img { width: 100%; height: 200px; object-fit: cover; }
         .popup-text { padding: 30px; text-align: center; }
         .rsvp-btn {
-            background: var(--space-blue); color: white; padding: 12px 30px;
-            border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 20px;
+            background: var(--bg-color); color: white; padding: 12px 25px;
+            border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 15px;
             pointer-events: auto;
         }
     </style>
 </head>
 <body>
 
-    <div class="stars-background"></div>
+    <div class="master-background"></div>
+    <div class="sunset-glow"></div>
 
-    <section class="hero">
-        <div class="map-overlay">
-            <img src="images/world.svg" class="map-img">
+    <main class="main-wrapper">
+        
+        <div class="text-group">
+            <p class="mini-tag">SAVE THE DATE</p>
+            <h1>Judit & Guillermo</h1>
+            <p class="date-tag">17 de Julio de 2027</p>
         </div>
 
-        <div class="svg-container">
-            <svg class="master-svg" viewBox="0 0 1000 600">
+        <div class="svg-overlay">
+            <svg viewBox="0 0 1000 500">
+                <path id="flightPath" d="M250,400 Q400,50 550,200" fill="none" />
                 
-                <path id="flightPath" d="M250,480 Q400,80 550,220" fill="none" />
-                
-                <g class="svg-text-group">
-                    <text x="500" y="270" class="svg-mini-title">SAVE THE DATE</text>
-                    <text x="500" y="340" class="svg-h1">Judit & Guillermo</text>
-                    <text x="500" y="390" class="svg-date">17 Julio 2027</text>
-                </g>
+                <path d="M250,400 Q400,50 550,200" fill="none" 
+                      stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="8,8" />
 
-                <path d="M250,480 Q400,80 550,220" fill="none" 
-                      stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="6,8" />
-
-                <g style="will-change: transform;">
-                    <animateMotion dur="12s" repeatCount="indefinite" rotate="auto">
+                <g>
+                    <path d="M-12,-8 L15,0 L-12,8 L-8,0 Z" fill="white" />
+                    <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
                         <mpath href="#flightPath" />
                     </animateMotion>
-                    <path d="M-12,-6 L12,0 L-12,6 L-8,0 Z" fill="white" transform="scale(1.2)" />
                 </g>
 
-                <circle cx="250" cy="480" r="6" fill="#fb7185" />
-                <text x="250" y="505" text-anchor="middle" class="svg-label">Buenos Aires</text>
+                <circle cx="250" cy="400" r="6" fill="#fb7185" />
+                <text x="250" y="430" text-anchor="middle" class="city-label">Buenos Aires</text>
 
-                <g id="bcnGroup" style="cursor:pointer; pointer-events:all;">
-                    <circle cx="550" cy="220" r="15" fill="rgba(52,211,153,0.3)">
+                <g id="bcnClick" style="cursor:pointer; pointer-events:all;">
+                    <circle cx="550" cy="200" r="15" fill="rgba(52,211,153,0.3)">
                         <animate attributeName="r" values="8;15;8" dur="2s" repeatCount="indefinite" />
                     </circle>
-                    <circle cx="550" cy="220" r="6" fill="#34d399" />
-                    <text x="550" y="245" text-anchor="middle" class="svg-label">Barcelona</text>
+                    <circle cx="550" cy="200" r="6" fill="#34d399" />
+                    <text x="550" y="230" text-anchor="middle" class="city-label">Barcelona</text>
                 </g>
             </svg>
         </div>
-    </section>
+
+    </main>
 
     <div class="popup" id="popup">
         <div class="popup-content">
@@ -308,17 +171,16 @@
                 <p>17 de Julio de 2027</p>
                 <a href="https://forms.gle/mNn5QGhmMoPXfbsSA" target="_blank" class="rsvp-btn">Confirmar asistencia</a>
                 <br>
-                <button id="closePopup" style="margin-top:20px; background:none; border:none; cursor:pointer; text-decoration:underline;">Cerrar</button>
+                <button id="closePopup" style="margin-top:15px; background:none; border:none; cursor:pointer; text-decoration:underline;">Cerrar</button>
             </div>
         </div>
     </div>
 
     <script>
-        const bcn = document.getElementById("bcnGroup");
+        const bcn = document.getElementById("bcnClick");
         const popup = document.getElementById("popup");
         const closePopup = document.getElementById("closePopup");
 
-        // El clic se hace sobre el grupo SVG
         bcn.addEventListener("click", () => { popup.style.display = "flex"; });
         closePopup.addEventListener("click", () => { popup.style.display = "none"; });
         window.addEventListener("click", (e) => { if(e.target === popup) popup.style.display = "none"; });
