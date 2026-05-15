@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Save the Date - Judit & Guillermo</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,23 +17,204 @@
         body {
             background: var(--primary-bg);
             color: white;
-            overflow: hidden; /* Evita scroll innecesario en el hero */
+            overflow: hidden;
             font-family: 'Montserrat', sans-serif;
-            -webkit-font-smoothing: antialiased;
         }
 
         .hero {
             position: relative;
-            width: 100%;
+            width: 100vw;
             height: 100vh;
             height: 100svh;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        /* FONDO ESTRELLAS */
+        /* SISTEMA DE ENCUADRE DINÁMICO */
+        /* Esto hace que el mapa sea siempre más ancho que la pantalla en móvil */
+        .viewport-fix {
+            position: absolute;
+            top: 0;
+            left: 50%; /* Centramos la base */
+            height: 100%;
+            width: 177.78vh; /* Mantiene proporción 16:9 basada en la altura */
+            min-width: 100%;
+            transform: translateX(-42%); /* AJUSTA ESTO: -50% es centro, -42% mueve a la derecha para ver más América */
+            z-index: 1;
+        }
+
+        .map-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.25;
+            filter: brightness(0.8) contrast(1.2);
+        }
+
+        /* CAPA INTERACTIVA (SVG y Puntos) */
+        .interactive-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .flight-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        /* PUNTOS GEOGRÁFICOS */
+        .point {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* Coordenadas en el lienzo 1000x562 */
+        .argentina { left: 28%; top: 82%; background: var(--accent-pink); }
+        .barcelona { left: 49%; top: 32%; background: var(--accent-green); cursor: pointer; }
+
+        .point span {
+            position: absolute;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* TEXTO CENTRAL (No se mueve con el mapa, queda fijo en pantalla) */
+        .fixed-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 300;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        /* POPUP */
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: white;
+            color: #0f172a;
+            width: min(800px, 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .popup-content { grid-template-columns: 1fr; }
+            .popup-img { height: 200px; }
+        }
+
+        .popup-img { width: 100%; height: 100%; object-fit: cover; }
+        .popup-text { padding: 40px; text-align: center; }
+
+        .rsvp-button {
+            background: var(--primary-bg);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<section class="hero">
+    <div class="viewport-fix">
+        <img src="images/world.svg" class="map-img">
+        
+        <div class="interactive-layer">
+            <svg class="flight-svg" viewBox="0 0 1000 562.5">
+                <path id="pathAnim" 
+                      d="M280,460 Q380,120 490,180" 
+                      fill="none" />
+                
+                <path d="M280,460 Q380,120 490,180" 
+                      fill="none" 
+                      stroke="rgba(255,255,255,0.4)" 
+                      stroke-width="2" 
+                      stroke-dasharray="6,8" />
+                
+                <g>
+                    <text font-size="30" fill="white" text-anchor="middle" dominant-baseline="central">
+                        &#9992;
+                    </text>
+                    <animateMotion dur="8s" repeatCount="indefinite" rotate="auto">
+                        <mpath href="#pathAnim" />
+                    </animateMotion>
+                </g>
+            </svg>
+
+            <div class="point argentina"><span>Buenos Aires</span></div>
+            <div class="point barcelona pulse" id="barcelonaPoint"><span>Barcelona</span></div>
+        </div>
+    </div>
+
+    <div class="fixed-content">
+        <p style="letter-spacing: 10px; opacity: 0.8; font-size: 0.9rem; margin-bottom: 10px;">SAVE THE DATE</p>
+        <h1>Judit & Guillermo</h1>
+    </div>
+</section>
+
+<div class="popup" id="popup">
+    <div class="popup-content">
+        <img src="images/image1.png" class="popup-img">
+        <div class="popup-text">
+            <h2>¡Nos casamos!</h2>
+            <p>17 de Julio de 2027</p>
+            <a href="https://forms.gle/mNn5QGhmMoPXfbsSA" target="_blank" class="rsvp-button">Confirmar asistencia</a>
+            <br>
+            <button id="closePopup" style="margin-top:20px; background:none; border:none; cursor:pointer; text-decoration:underline;">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const point = document.getElementById("barcelonaPoint");
+    const popup = document.getElementById("popup");
+    const closePopup = document.getElementById("closePopup");
+
+    point.addEventListener("click", () => { popup.style.display = "flex"; });
+    closePopup.addEventListener("click", () => { popup.style.display = "none"; });
+    window.addEventListener("click", (e) => { if(e.target === popup) popup.style.display = "none"; });
+</script>
+
+</body>
+</html>        /* FONDO ESTRELLAS */
         .stars {
             position: absolute;
             inset: 0;
