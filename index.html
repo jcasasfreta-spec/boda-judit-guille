@@ -7,7 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-bg: #020617;
+            --space-blue: #020617;
+            --sunset-orange: rgba(255, 145, 77, 0.4);
             --accent-pink: #fb7185;
             --accent-green: #34d399;
         }
@@ -15,27 +16,38 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: var(--primary-bg);
+            background-color: var(--space-blue);
             color: white;
             overflow: hidden;
             font-family: 'Montserrat', sans-serif;
-            height: 100vh;
         }
 
-        /* --- 1. CAPA FONDO (ESTRELLAS) --- */
-        .stars {
+        /* --- 1. ESTRELLAS --- */
+        .stars-container {
             position: fixed;
             inset: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, white 1px, transparent 1.5px),
-                radial-gradient(circle at 70% 50%, white 1px, transparent 1.5px),
-                radial-gradient(circle at 40% 80%, white 1px, transparent 1.5px);
-            background-size: 300px 300px;
-            opacity: 0.4;
             z-index: 0;
+            pointer-events: none;
         }
 
-        /* --- 2. CONTENEDOR HERO --- */
+        .stars {
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(1px 1px at 20px 30px, white, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 100px 150px, white, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 200px 80px, white, rgba(0,0,0,0));
+            background-size: 300px 300px;
+            opacity: 0.5;
+            animation: twinkle 5s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            from { opacity: 0.3; }
+            to { opacity: 0.7; }
+        }
+
+        /* --- 2. HERO Y SUNSET --- */
         .hero {
             position: relative;
             width: 100vw;
@@ -45,152 +57,99 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            /* Degradado de atardecer de fondo */
+            background: linear-gradient(to bottom, 
+                #0a1428 0%, 
+                #1e293b 40%, 
+                #4338ca22 60%, 
+                var(--sunset-orange) 95%);
+        }
+
+        /* Contenedor del mapa para que no se corte y esté centrado */
+        .map-wrapper {
+            position: relative;
+            height: 80%; /* Ajusta el tamaño del mapa en pantalla */
+            aspect-ratio: 16/9;
             z-index: 1;
         }
 
-        /* --- 3. SISTEMA DE MAPA Y COORDENADAS --- */
-        .map-viewport {
-            position: relative;
-            /* En escritorio ocupa el ancho, en móvil el alto */
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .map-container {
-            position: relative;
-            /* Esto mantiene la proporción del mapa pase lo que pase */
-            height: 100%;
-            aspect-ratio: 16/9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* En móviles, permitimos que el mapa sea un poco más alto para que no se vea minúsculo */
-        @media (max-aspect-ratio: 1/1) {
-            .map-container {
-                height: 70%; /* Ajusta este % para dar más o menos zoom en móvil */
-            }
+        @media (max-width: 768px) {
+            .map-wrapper { height: 50%; } /* Más pequeño en móvil para ver estrellas arriba */
         }
 
         .map-img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            opacity: 0.3;
-            filter: brightness(1.2) contrast(1.1);
+            opacity: 0.4;
+            filter: brightness(1.2) contrast(1.1) saturate(0.5);
         }
 
-        /* --- 4. CAPAS DE EFECTO (SUNSET) --- */
-        .sunset-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                to bottom,
-                rgba(255, 120, 80, 0.2) 0%,
-                rgba(255, 160, 80, 0.1) 40%,
-                transparent 70%,
-                rgba(2, 6, 23, 0.8) 100%
-            );
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        /* --- 5. ELEMENTOS INTERACTIVOS (SVG Y PUNTOS) --- */
-        .interactive-layer {
+        /* --- 3. SVG Y ANIMACIÓN --- */
+        .svg-layer {
             position: absolute;
             inset: 0;
             z-index: 5;
-        }
-
-        .flight-svg {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
+            pointer-events: none;
         }
 
         .point {
             position: absolute;
-            width: clamp(10px, 2vw, 14px);
-            height: clamp(10px, 2vw, 14px);
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             transform: translate(-50%, -50%);
             pointer-events: auto;
-            z-index: 10;
         }
 
-        /* Coordenadas relativas al mapa (Ajustadas para un mapa estándar) */
         .argentina { left: 28%; top: 82%; background: var(--accent-pink); }
-        .barcelona { left: 49%; top: 32%; background: var(--accent-green); cursor: pointer; }
+        .barcelona { left: 49.5%; top: 32%; background: var(--accent-green); cursor: pointer; }
 
         .point span {
             position: absolute;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            white-space: nowrap;
-            font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+            font-size: 0.65rem;
             letter-spacing: 2px;
             text-transform: uppercase;
+            opacity: 0.8;
+            white-space: nowrap;
         }
 
-        /* --- 6. TEXTO FIJO --- */
-        .fixed-content {
+        /* --- 4. TEXTO PRINCIPAL --- */
+        .content-overlay {
             position: absolute;
-            bottom: 10%;
+            bottom: 12%;
             width: 100%;
             text-align: center;
-            z-index: 20;
+            z-index: 10;
             pointer-events: none;
         }
 
         h1 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
             font-weight: 300;
+            margin-top: 10px;
         }
 
         /* --- POPUP --- */
         .popup {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; justify-content: center; align-items: center;
+            z-index: 1000; padding: 20px;
         }
-
         .popup-content {
-            background: white;
-            color: #0f172a;
-            width: min(800px, 100%);
-            border-radius: 24px;
-            overflow: hidden;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            background: white; color: #0f172a; width: min(800px, 100%);
+            border-radius: 24px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr;
         }
-
-        @media (max-width: 768px) {
-            .popup-content { grid-template-columns: 1fr; }
-            .popup-img { height: 200px; }
-        }
-
+        @media (max-width: 768px) { .popup-content { grid-template-columns: 1fr; } .popup-img { height: 200px; } }
         .popup-img { width: 100%; height: 100%; object-fit: cover; }
         .popup-text { padding: 40px; text-align: center; }
-
         .rsvp-button {
-            background: var(--primary-bg);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 30px;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 20px;
+            background: var(--space-blue); color: white; padding: 12px 30px;
+            border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 20px;
         }
 
         .pulse { animation: pulse 2s infinite; }
@@ -203,36 +162,37 @@
 </head>
 <body>
 
-    <div class="stars"></div>
+    <div class="stars-container"><div class="stars"></div></div>
 
     <section class="hero">
-        <div class="map-viewport">
-            <div class="map-container">
-                <img src="images/world.svg" class="map-img">
-                <div class="sunset-overlay"></div>
+        <div class="map-wrapper">
+            <img src="images/world.svg" class="map-img">
 
-                <div class="interactive-layer">
-                    <svg class="flight-svg" viewBox="0 0 1000 562.5">
-                        <path id="pathAnim" d="M280,460 Q380,120 490,180" fill="none" />
-                        <path d="M280,460 Q380,120 490,180" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-dasharray="6,8" />
-                        
-                        <g>
-                            <text font-size="24" fill="white" text-anchor="middle" dominant-baseline="central">&#9992;</text>
-                            <animateMotion dur="8s" repeatCount="indefinite" rotate="auto">
-                                <mpath href="#pathAnim" />
-                            </animateMotion>
-                        </g>
-                    </svg>
+            <div class="svg-layer">
+                <svg viewBox="0 0 1000 562.5" style="width:100%; height:100%; overflow:visible;">
+                    <path id="flightPath" d="M280,460 Q380,120 495,180" fill="none" 
+                          stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="6,8" />
+                    
+                    <g>
+                        <text font-size="28" fill="white" text-anchor="middle" dominant-baseline="central" 
+                              transform="rotate(-45)">
+                            ✈
+                        </text>
+                        <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
+                            <mpath href="#flightPath" />
+                        </animateMotion>
+                    </g>
+                </svg>
 
-                    <div class="point argentina"><span>Buenos Aires</span></div>
-                    <div class="point barcelona pulse" id="barcelonaPoint"><span>Barcelona</span></div>
-                </div>
+                <div class="point argentina"><span>Buenos Aires</span></div>
+                <div class="point barcelona pulse" id="barcelonaPoint"><span>Barcelona</span></div>
             </div>
         </div>
 
-        <div class="fixed-content">
-            <p style="letter-spacing: 10px; opacity: 0.8; font-size: 0.8rem; margin-bottom: 5px;">SAVE THE DATE</p>
+        <div class="content-overlay">
+            <p style="letter-spacing: 8px; font-size: 0.8rem; opacity: 0.9;">SAVE THE DATE</p>
             <h1>Judit & Guillermo</h1>
+            <p style="font-size: 1.2rem; margin-top: 10px; font-family: 'Cormorant Garamond';">17 Julio 2027</p>
         </div>
     </section>
 
