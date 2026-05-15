@@ -2,125 +2,90 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Save the Date - Judit & Guillermo</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --space-blue: #020617;
-            --sunset-orange: rgba(255, 145, 77, 0.4);
             --accent-pink: #fb7185;
             --accent-green: #34d399;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
+        body, html {
             background-color: var(--space-blue);
             color: white;
             overflow: hidden;
+            width: 100%;
+            height: 100%;
             font-family: 'Montserrat', sans-serif;
         }
 
-        /* --- 1. ESTRELLAS --- */
-        .stars-container {
+        /* --- FONDO FIJO (Estrellas y Sunset) --- */
+        .background-layer {
             position: fixed;
             inset: 0;
             z-index: 0;
-            pointer-events: none;
+            background: linear-gradient(to bottom, #020617 0%, #0f172a 60%, #312e81 100%);
         }
 
         .stars {
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(1px 1px at 20px 30px, white, rgba(0,0,0,0)),
-                radial-gradient(1.5px 1.5px at 100px 150px, white, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 200px 80px, white, rgba(0,0,0,0));
-            background-size: 300px 300px;
-            opacity: 0.5;
-            animation: twinkle 5s infinite alternate;
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(1px 1px at 20px 30px, white, transparent),
+                        radial-gradient(1px 1px at 150px 80px, white, transparent);
+            background-size: 250px 250px;
+            opacity: 0.4;
         }
 
-        @keyframes twinkle {
-            from { opacity: 0.3; }
-            to { opacity: 0.7; }
-        }
-
-        /* --- 2. HERO Y SUNSET --- */
+        /* --- HERO (Contenedor Principal) --- */
         .hero {
             position: relative;
             width: 100vw;
             height: 100vh;
             height: 100svh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            /* Degradado de atardecer de fondo */
-            background: linear-gradient(to bottom, 
-                #0a1428 0%, 
-                #1e293b 40%, 
-                #4338ca22 60%, 
-                var(--sunset-orange) 95%);
-        }
-
-        /* Contenedor del mapa para que no se corte y esté centrado */
-        .map-wrapper {
-            position: relative;
-            height: 80%; /* Ajusta el tamaño del mapa en pantalla */
-            aspect-ratio: 16/9;
             z-index: 1;
         }
 
-        @media (max-width: 768px) {
-            .map-wrapper { height: 50%; } /* Más pequeño en móvil para ver estrellas arriba */
-        }
-
-        .map-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            opacity: 0.4;
-            filter: brightness(1.2) contrast(1.1) saturate(0.5);
-        }
-
-        /* --- 3. SVG Y ANIMACIÓN --- */
-        .svg-layer {
+        /* EL MAPA Y EL SVG: Sincronizados con 'slice' para que llenen la pantalla */
+        .map-base {
             position: absolute;
             inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Llenado total sin franjas */
+            opacity: 0.25;
+            filter: brightness(1.2);
+        }
+
+        .interactive-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
             z-index: 5;
-            pointer-events: none;
+            /* Esto es CRÍTICO: el SVG se recorta igual que el mapa 'cover' */
+            preserveAspectRatio: xMidYMid slice;
         }
 
-        .point {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: auto;
-        }
-
-        .argentina { left: 28%; top: 82%; background: var(--accent-pink); }
-        .barcelona { left: 49.5%; top: 32%; background: var(--accent-green); cursor: pointer; }
-
-        .point span {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.65rem;
+        /* --- PUNTOS Y TEXTO --- */
+        /* Usamos coordenadas relativas dentro del SVG para que no se desalineen */
+        .label-text {
+            font-size: 14px;
+            fill: white;
+            font-family: 'Montserrat', sans-serif;
             letter-spacing: 2px;
             text-transform: uppercase;
             opacity: 0.8;
-            white-space: nowrap;
         }
 
-        /* --- 4. TEXTO PRINCIPAL --- */
-        .content-overlay {
+        /* --- CONTENIDO FIJO (Nombres) --- */
+        .ui-overlay {
             position: absolute;
-            bottom: 12%;
+            bottom: 10%;
+            left: 0;
             width: 100%;
             text-align: center;
             z-index: 10;
@@ -129,9 +94,9 @@
 
         h1 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            font-size: clamp(2.5rem, 10vw, 6rem);
             font-weight: 300;
-            margin-top: 10px;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
         /* --- POPUP --- */
@@ -144,55 +109,55 @@
             background: white; color: #0f172a; width: min(800px, 100%);
             border-radius: 24px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr;
         }
-        @media (max-width: 768px) { .popup-content { grid-template-columns: 1fr; } .popup-img { height: 200px; } }
+        @media (max-width: 768px) { .popup-content { grid-template-columns: 1fr; } }
         .popup-img { width: 100%; height: 100%; object-fit: cover; }
         .popup-text { padding: 40px; text-align: center; }
-        .rsvp-button {
+
+        .rsvp-btn {
             background: var(--space-blue); color: white; padding: 12px 30px;
             border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 20px;
         }
 
-        .pulse { animation: pulse 2s infinite; }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(52,211,153, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(52,211,153, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(52,211,153, 0); }
-        }
+        /* Optimización para Mac (Evita el parpadeo/lag) */
+        svg * { will-change: transform; }
     </style>
 </head>
 <body>
 
-    <div class="stars-container"><div class="stars"></div></div>
+    <div class="background-layer">
+        <div class="stars"></div>
+    </div>
 
     <section class="hero">
-        <div class="map-wrapper">
-            <img src="images/world.svg" class="map-img">
+        <img src="images/world.svg" class="map-base">
 
-            <div class="svg-layer">
-                <svg viewBox="0 0 1000 562.5" style="width:100%; height:100%; overflow:visible;">
-                    <path id="flightPath" d="M280,460 Q380,120 495,180" fill="none" 
-                          stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="6,8" />
-                    
-                    <g>
-                        <text font-size="28" fill="white" text-anchor="middle" dominant-baseline="central" 
-                              transform="rotate(-45)">
-                            ✈
-                        </text>
-                        <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
-                            <mpath href="#flightPath" />
-                        </animateMotion>
-                    </g>
-                </svg>
+        <svg class="interactive-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice">
+            
+            <path id="flightPath" d="M280,420 Q380,80 495,140" fill="none" />
+            
+            <path d="M280,420 Q380,80 495,140" fill="none" 
+                  stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="5,5" />
+            
+            <g>
+                <path d="M-10,-10 L10,0 L-10,10 L-6,0 Z" fill="white" transform="rotate(0)" />
+                <text font-size="25" fill="white" text-anchor="middle" dominant-baseline="central" transform="rotate(-45)">✈</text>
+                
+                <animateMotion dur="12s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#flightPath" />
+                </animateMotion>
+            </g>
 
-                <div class="point argentina"><span>Buenos Aires</span></div>
-                <div class="point barcelona pulse" id="barcelonaPoint"><span>Barcelona</span></div>
-            </div>
-        </div>
+            <circle cx="280" cy="420" r="6" fill="#fb7185" />
+            <text x="280" y="445" text-anchor="middle" class="label-text">Buenos Aires</text>
 
-        <div class="content-overlay">
-            <p style="letter-spacing: 8px; font-size: 0.8rem; opacity: 0.9;">SAVE THE DATE</p>
+            <circle id="bcnCircle" cx="495" cy="140" r="8" fill="#34d399" style="cursor:pointer; pointer-events:all;" />
+            <text x="495" y="165" text-anchor="middle" class="label-text">Barcelona</text>
+        </svg>
+
+        <div class="ui-overlay">
+            <p style="letter-spacing: 10px; font-size: 0.8rem; opacity: 0.7;">SAVE THE DATE</p>
             <h1>Judit & Guillermo</h1>
-            <p style="font-size: 1.2rem; margin-top: 10px; font-family: 'Cormorant Garamond';">17 Julio 2027</p>
+            <p style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">17 Julio 2027</p>
         </div>
     </section>
 
@@ -202,7 +167,7 @@
             <div class="popup-text">
                 <h2>¡Nos casamos!</h2>
                 <p>17 de Julio de 2027</p>
-                <a href="https://forms.gle/mNn5QGhmMoPXfbsSA" target="_blank" class="rsvp-button">Confirmar asistencia</a>
+                <a href="https://forms.gle/mNn5QGhmMoPXfbsSA" target="_blank" class="rsvp-btn">Confirmar asistencia</a>
                 <br>
                 <button id="closePopup" style="margin-top:20px; background:none; border:none; cursor:pointer; text-decoration:underline;">Cerrar</button>
             </div>
@@ -210,11 +175,12 @@
     </div>
 
     <script>
-        const point = document.getElementById("barcelonaPoint");
+        const bcn = document.getElementById("bcnCircle");
         const popup = document.getElementById("popup");
         const closePopup = document.getElementById("closePopup");
 
-        point.addEventListener("click", () => { popup.style.display = "flex"; });
+        // El clic ahora es sobre el círculo del SVG
+        bcn.addEventListener("click", () => { popup.style.display = "flex"; });
         closePopup.addEventListener("click", () => { popup.style.display = "none"; });
         window.addEventListener("click", (e) => { if(e.target === popup) popup.style.display = "none"; });
     </script>
