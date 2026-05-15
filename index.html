@@ -2,94 +2,108 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Save the Date - Judit & Guillermo</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --space-blue: #020617;
+            --sunset-glow: rgba(255, 145, 77, 0.2);
             --accent-pink: #fb7185;
             --accent-green: #34d399;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
+        body, html {
             background-color: var(--space-blue);
             color: white;
             overflow: hidden;
+            width: 100%; height: 100%;
             font-family: 'Montserrat', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            height: 100vh; width: 100vw;
         }
 
-        /* --- CAPA 0: ESTRELLAS --- */
+        /* --- 1. CAPA FONDO: ESTRELLAS Y SUNSET --- */
+        .background-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: linear-gradient(to bottom, #020617 0%, #0f172a 50%, #2e1065 100%);
+        }
+
         .stars {
-            position: fixed; inset: 0; z-index: 0;
-            background: radial-gradient(1px 1px at 20px 30px, white, transparent),
-                        radial-gradient(1.2px 1.2px at 150px 80px, white, transparent);
-            background-size: 250px 250px; opacity: 0.3;
-            animation: twinkle 4s infinite alternate;
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(1.2px 1.2px at 50px 100px, white, transparent),
+                        radial-gradient(1px 1px at 200px 300px, white, transparent);
+            background-size: 300px 300px;
+            opacity: 0.4;
+            animation: twinkle 5s infinite alternate;
         }
-        @keyframes twinkle { from { opacity: 0.2; } to { opacity: 0.5; } }
 
-        /* --- HERO PRINCIPAL --- */
-        .hero {
-            position: relative; width: 100vw; height: 100vh; height: 100svh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        /* --- 2. MAPA (COVER CENTRADO) --- */
+        .map-container {
+            position: absolute;
+            inset: 0;
             z-index: 1;
-            /* Sunset suave de fondo */
-            background: linear-gradient(to bottom, #020617 0%, #1e1b4b 60%, rgba(255, 145, 77, 0.15) 100%);
-        }
-
-        /* --- CAPA 1: MAPA Y SVG (Sincronizados) --- */
-        .map-wrapper {
-            position: relative;
-            height: 85svh; /* Ocupa casi todo el alto para que no se vea pequeño en iPhone */
-            aspect-ratio: 16/9; /* Proporción sagrada del mapa */
-            z-index: 2;
-        }
-
-        @media (min-aspect-ratio: 16/9) {
-            .map-wrapper { height: auto; width: 90vw; } /* En Mac se ajusta por ancho */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .map-img {
             width: 100%; height: 100%;
-            object-fit: contain; /* Mapa completo sin cortes laterales */
-            opacity: 0.3; filter: brightness(1.2) contrast(1.1);
+            object-fit: cover; /* Elimina franjas negras */
+            object-position: 45% center; /* Centra el Atlántico */
+            opacity: 0.25;
+            filter: brightness(1.1) contrast(1.1);
         }
 
-        .interactive-svg {
-            position: absolute; inset: 0; width: 100%; height: 100%;
-            z-index: 3; overflow: visible;
-        }
-
-        /* --- PUNTOS Y LÍNEA (Dentro del SVG) --- */
-        .label-text {
-            font-size: 13px; fill: rgba(255,255,255,0.7);
-            font-family: 'Montserrat', sans-serif;
-            letter-spacing: 2px; text-transform: uppercase;
-        }
-
-        /* --- CAPA 3: TEXTO (SAVE THE DATE + NOMBRES) --- */
-        .content-overlay {
+        /* --- 3. TEXTO CENTRADO EN PANTALLA --- */
+        .main-text {
             position: absolute;
-            bottom: 12%; /* Justo abajo, sobre el mapa */
-            width: 100%; text-align: center;
-            z-index: 10; /* POR ENCIMA DEL MAPA */
+            top: 55%; /* Ligeramente debajo del centro para que el avión cruce por el medio-alto */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 5; /* Por debajo del avión */
+            width: 100%;
             pointer-events: none;
         }
 
         h1 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-size: clamp(2.8rem, 10vw, 7rem);
             font-weight: 300;
-            margin-top: 5px;
-            text-shadow: 0 0 15px rgba(0,0,0,0.7);
+            text-shadow: 0 0 30px rgba(0,0,0,0.9);
+            line-height: 1;
         }
 
-        /* --- POPUP (Sin cambios) --- */
+        .date-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+
+        /* --- 4. CAPA SUPERIOR: SVG (AVIÓN Y PUNTOS) --- */
+        .svg-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 10; /* EL AVIÓN VUELA SOBRE EL TEXTO */
+            pointer-events: none;
+        }
+
+        .interactive-svg {
+            width: 100%; height: 100%;
+            /* 'slice' asegura que el SVG se estire igual que el mapa 'cover' */
+            preserveAspectRatio: xMidYMid slice; 
+        }
+
+        /* --- ESTILOS PUNTOS --- */
+        .label { font-size: 12px; fill: white; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+
+        /* --- POPUP --- */
         .popup {
             position: fixed; inset: 0; background: rgba(0,0,0,0.9);
             display: none; justify-content: center; align-items: center;
@@ -102,190 +116,57 @@
         @media (max-width: 768px) { .popup-content { grid-template-columns: 1fr; } .popup-img { height: 180px; } }
         .popup-img { width: 100%; height: 100%; object-fit: cover; }
         .popup-text { padding: 30px; text-align: center; }
+        
         .rsvp-btn {
-            background: var(--space-blue); color: white; padding: 10px 25px;
-            border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 15px;
+            background: var(--space-blue); color: white; padding: 12px 30px;
+            border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 20px;
+            pointer-events: auto;
         }
 
-        .pulse { animation: pulse 2s infinite; }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(52,211,153, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(52,211,153, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(52,211,153, 0); }
-        }
+        @keyframes twinkle { from { opacity: 0.3; } to { opacity: 0.6; } }
     </style>
 </head>
 <body>
 
-    <div class="stars"></div>
+    <div class="background-canvas">
+        <div class="stars"></div>
+    </div>
 
     <section class="hero">
-        <div class="map-wrapper">
+        <div class="map-container">
             <img src="images/world.svg" class="map-img">
+        </div>
 
+        <div class="main-text">
+            <p style="letter-spacing: 8px; font-size: 0.7rem; margin-bottom: 15px; opacity: 0.8;">SAVE THE DATE</p>
+            <h1>Judit & Guillermo</h1>
+            <p class="date-text">17 Julio 2027</p>
+        </div>
+
+        <div class="svg-overlay">
             <svg class="interactive-svg" viewBox="0 0 1000 600">
+                <path id="flightPath" d="M250,480 Q400,50 550,220" fill="none" />
                 
-                <path id="flightPath" d="M250,450 Q380,100 520,200" fill="none" />
-                
-                <path d="M250,450 Q380,100 520,200" fill="none" 
-                      stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="6,8" />
-                
+                <path d="M250,480 Q400,50 550,220" fill="none" 
+                      stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="5,5" />
+
                 <g>
-                    <text font-size="28" fill="white" text-anchor="middle" dominant-baseline="central" 
+                    <text font-size="30" fill="white" text-anchor="middle" dominant-baseline="central" 
                           transform="rotate(-45)">✈</text>
-                    
                     <animateMotion dur="12s" repeatCount="indefinite" rotate="auto">
                         <mpath href="#flightPath" />
                     </animateMotion>
                 </g>
 
-                <circle cx="250" cy="450" r="6" fill="#fb7185" />
-                <text x="250" y="475" text-anchor="middle" class="label-text">Buenos Aires</text>
+                <circle cx="250" cy="480" r="6" fill="#fb7185" />
+                <text x="250" y="505" text-anchor="middle" class="label">Buenos Aires</text>
 
-                <circle id="bcnCircle" cx="520" cy="200" r="8" fill="#34d399" class="pulse" style="cursor:pointer; pointer-events:all;"/>
-                <text x="520" y="225" text-anchor="middle" class="label-text">Barcelona</text>
+                <circle id="bcnClick" cx="550" cy="220" r="15" fill="rgba(52,211,153,0.3)" style="cursor:pointer; pointer-events:all;">
+                    <animate attributeName="r" values="8;15;8" dur="2s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="550" cy="220" r="6" fill="#34d399" />
+                <text x="550" y="245" text-anchor="middle" class="label">Barcelona</text>
             </svg>
-        </div>
-
-        <div class="content-overlay">
-            <p style="letter-spacing: 10px; font-size: 0.8rem; opacity: 0.8;">SAVE THE DATE</p>
-            <h1>Judit & Guillermo</h1>
-            <p style="font-family: 'Cormorant Garamond'; font-size: 1.5rem; margin-top: 5px;">17 Julio 2027</p>
-        </div>
-    </section>
-
-    <div class="popup" id="popup">
-        <div class="popup-content">
-            <img src="images/image1.png" class="popup-img">
-            <div class="popup-text">
-                <h2>¡Nos casamos!</h2>
-                <p>17 de Julio de 2027</p>
-                <a href="https://forms.gle/mNn5QGhmMoPXfbsSA" target="_blank" class="rsvp-btn">Confirmar asistencia</a>
-                <br>
-                <button id="closePopup" style="margin-top:20px; background:none; border:none; cursor:pointer; text-decoration:underline;">Cerrar            background: radial-gradient(1px 1px at 20px 30px, white, transparent),
-                        radial-gradient(1px 1px at 150px 80px, white, transparent);
-            background-size: 250px 250px;
-            opacity: 0.4;
-        }
-
-        /* --- HERO (Contenedor Principal) --- */
-        .hero {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            height: 100svh;
-            z-index: 1;
-        }
-
-        /* EL MAPA Y EL SVG: Sincronizados con 'slice' para que llenen la pantalla */
-        .map-base {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Llenado total sin franjas */
-            opacity: 0.25;
-            filter: brightness(1.2);
-        }
-
-        .interactive-svg {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 5;
-            /* Esto es CRÍTICO: el SVG se recorta igual que el mapa 'cover' */
-            preserveAspectRatio: xMidYMid slice;
-        }
-
-        /* --- PUNTOS Y TEXTO --- */
-        /* Usamos coordenadas relativas dentro del SVG para que no se desalineen */
-        .label-text {
-            font-size: 14px;
-            fill: white;
-            font-family: 'Montserrat', sans-serif;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-
-        /* --- CONTENIDO FIJO (Nombres) --- */
-        .ui-overlay {
-            position: absolute;
-            bottom: 10%;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2.5rem, 10vw, 6rem);
-            font-weight: 300;
-            text-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        /* --- POPUP --- */
-        .popup {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000; padding: 20px;
-        }
-        .popup-content {
-            background: white; color: #0f172a; width: min(800px, 100%);
-            border-radius: 24px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr;
-        }
-        @media (max-width: 768px) { .popup-content { grid-template-columns: 1fr; } }
-        .popup-img { width: 100%; height: 100%; object-fit: cover; }
-        .popup-text { padding: 40px; text-align: center; }
-
-        .rsvp-btn {
-            background: var(--space-blue); color: white; padding: 12px 30px;
-            border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 20px;
-        }
-
-        /* Optimización para Mac (Evita el parpadeo/lag) */
-        svg * { will-change: transform; }
-    </style>
-</head>
-<body>
-
-    <div class="background-layer">
-        <div class="stars"></div>
-    </div>
-
-    <section class="hero">
-        <img src="images/world.svg" class="map-base">
-
-        <svg class="interactive-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice">
-            
-            <path id="flightPath" d="M280,420 Q380,80 495,140" fill="none" />
-            
-            <path d="M280,420 Q380,80 495,140" fill="none" 
-                  stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="5,5" />
-            
-            <g>
-                <path d="M-10,-10 L10,0 L-10,10 L-6,0 Z" fill="white" transform="rotate(0)" />
-                <text font-size="25" fill="white" text-anchor="middle" dominant-baseline="central" transform="rotate(-45)">✈</text>
-                
-                <animateMotion dur="12s" repeatCount="indefinite" rotate="auto">
-                    <mpath href="#flightPath" />
-                </animateMotion>
-            </g>
-
-            <circle cx="280" cy="420" r="6" fill="#fb7185" />
-            <text x="280" y="445" text-anchor="middle" class="label-text">Buenos Aires</text>
-
-            <circle id="bcnCircle" cx="495" cy="140" r="8" fill="#34d399" style="cursor:pointer; pointer-events:all;" />
-            <text x="495" y="165" text-anchor="middle" class="label-text">Barcelona</text>
-        </svg>
-
-        <div class="ui-overlay">
-            <p style="letter-spacing: 10px; font-size: 0.8rem; opacity: 0.7;">SAVE THE DATE</p>
-            <h1>Judit & Guillermo</h1>
-            <p style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">17 Julio 2027</p>
         </div>
     </section>
 
@@ -303,11 +184,10 @@
     </div>
 
     <script>
-        const bcn = document.getElementById("bcnCircle");
+        const bcn = document.getElementById("bcnClick");
         const popup = document.getElementById("popup");
         const closePopup = document.getElementById("closePopup");
 
-        // El clic ahora es sobre el círculo del SVG
         bcn.addEventListener("click", () => { popup.style.display = "flex"; });
         closePopup.addEventListener("click", () => { popup.style.display = "none"; });
         window.addEventListener("click", (e) => { if(e.target === popup) popup.style.display = "none"; });
