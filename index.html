@@ -1,189 +1,126 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Invitación Judit & Guillermo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
-    <style>
-        /* CONFIGURACIÓN BASE ATÓMICA */
-        :root {
-            --bg-color: #020617;
-            --pink: #fb7185;
-            --green: #34d399;
-        }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #020617;
+  color: white;
+  overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
+  height: 100vh;
+  height: 100svh;
+}
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-            overflow: hidden; /* Evita cualquier scroll */
-        }
+.stars {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(1px 1px at 20px 30px, white, transparent),
+              radial-gradient(1px 1px at 150px 80px, white, transparent);
+  background-size: 250px 250px;
+  opacity: 0.3;
+  z-index: 0;
+}
 
-        /* CAPA 1: FONDO UNIFICADO (Estrellas + Mapa + Sunset) */
-        .master-background {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            /* Evita que el mapa se repita en Windows */
-            background-image: 
-                linear-gradient(to bottom, rgba(2, 6, 23, 0.5), rgba(2, 6, 23, 0.8)),
-                url('images/world.svg');
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            opacity: 0.3;
-        }
+.sunset {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(255,120,80,0.2) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
 
-        /* CAPA 2: DEGRADADO SUNSET (Para asegurar que se vea el efecto) */
-        .sunset-glow {
-            position: fixed;
-            inset: 0;
-            z-index: 2;
-            background: linear-gradient(to bottom, transparent 50%, rgba(251, 146, 60, 0.2) 100%);
-            pointer-events: none;
-        }
+.hero {
+  position: relative;
+  height: 100svh;
+  width: 100vw;
+  overflow: hidden;
+}
 
-        /* CAPA 3: CONTENEDOR DE CONTENIDO (FLEXBOX PARA MAC) */
-        .main-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; /* Centrado vertical infalible */
-            z-index: 10;
-            text-align: center;
-        }
+.map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 45% center;
+  opacity: .25;
+  z-index: 1;
+}
 
-        .text-group {
-            pointer-events: none;
-            z-index: 15;
-        }
+.content {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-        .text-group h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2.5rem, 12vw, 7rem);
-            font-weight: 300;
-            line-height: 1;
-            margin: 15px 0;
-            text-shadow: 0 0 30px rgba(0,0,0,1);
-        }
+.text-box {
+  text-align: center;
+  z-index: 15;
+  pointer-events: none;
+}
 
-        .mini-tag { letter-spacing: 10px; font-size: 0.8rem; opacity: 0.8; }
-        .date-tag { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; opacity: 0.9; }
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.5rem, 10vw, 6rem);
+  font-weight: 300;
+  text-shadow: 0 0 20px rgba(0,0,0,0.8);
+}
 
-        /* CAPA 4: SVG DEL AVIÓN (CUBRE TODA LA PANTALLA) */
-        .svg-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 20; /* El avión vuela sobre el texto */
-            pointer-events: none;
-        }
+.mini-title { letter-spacing: 10px; font-size: 0.8rem; margin-bottom: 10px; }
 
-        .svg-overlay svg {
-            width: 100%;
-            height: 100%;
-            /* 'slice' para que los puntos no se muevan de su sitio en el mapa */
-            preserveAspectRatio: xMidYMid slice;
-        }
+.flight-system {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
 
-        /* Estilo de los puntos para que no se achiquen en iPhone */
-        .city-label {
-            font-size: 14px;
-            fill: white;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
+/* POPUP */
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 20px;
+}
 
-        /* POPUP */
-        .popup {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000; padding: 20px;
-        }
-        .popup-content {
-            background: white; color: #0f172a; width: min(600px, 90%);
-            border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;
-        }
-        .popup-img { width: 100%; height: 200px; object-fit: cover; }
-        .popup-text { padding: 30px; text-align: center; }
-        .rsvp-btn {
-            background: var(--bg-color); color: white; padding: 12px 25px;
-            border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 15px;
-            pointer-events: auto;
-        }
-    </style>
-</head>
-<body>
+.popup-content {
+  width: min(800px, 90vw);
+  background: white;
+  color: #020617;
+  border-radius: 20px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
 
-    <div class="master-background"></div>
-    <div class="sunset-glow"></div>
+@media (max-width: 768px) {
+  .popup-content { grid-template-columns: 1fr; }
+  .popup-content img { height: 200px; object-fit: cover; }
+}
 
-    <main class="main-wrapper">
-        
-        <div class="text-group">
-            <p class="mini-tag">SAVE THE DATE</p>
-            <h1>Judit & Guillermo</h1>
-            <p class="date-tag">17 de Julio de 2027</p>
-        </div>
+.popup-text { padding: 40px; text-align: center; }
+.rsvp-button {
+  display: inline-block;
+  padding: 12px 25px;
+  background: #020617;
+  color: white;
+  text-decoration: none;
+  border-radius: 25px;
+  margin: 20px 0;
+}
 
-        <div class="svg-overlay">
-            <svg viewBox="0 0 1000 500">
-                <path id="flightPath" d="M250,400 Q400,50 550,200" fill="none" />
-                
-                <path d="M250,400 Q400,50 550,200" fill="none" 
-                      stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="8,8" />
+#closePopup { background: none; border: none; text-decoration: underline; cursor: pointer; }
 
-                <g>
-                    <path d="M-12,-8 L15,0 L-12,8 L-8,0 Z" fill="white" />
-                    <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
-                        <mpath href="#flightPath" />
-                    </animateMotion>
-                </g>
-
-                <circle cx="250" cy="400" r="6" fill="#fb7185" />
-                <text x="250" y="430" text-anchor="middle" class="city-label">Buenos Aires</text>
-
-                <g id="bcnClick" style="cursor:pointer; pointer-events:all;">
-                    <circle cx="550" cy="200" r="15" fill="rgba(52,211,153,0.3)">
-                        <animate attributeName="r" values="8;15;8" dur="2s" repeatCount="indefinite" />
-                    </circle>
-                    <circle cx="550" cy="200" r="6" fill="#34d399" />
-                    <text x="550" y="230" text-anchor="middle" class="city-label">Barcelona</text>
-                </g>
-            </svg>
-        </div>
-
-    </main>
-
-    <div class="popup" id="popup">
-        <div class="popup-content">
-            <img src="images/image1.png" class="popup-img">
-            <div class="popup-text">
-                <h2>¡Nos casamos!</h2>
-                <p>17 de Julio de 2027</p>
-                <a href="https://forms.gle/mNn5QGhmMoPXfbsSA" target="_blank" class="rsvp-btn">Confirmar asistencia</a>
-                <br>
-                <button id="closePopup" style="margin-top:15px; background:none; border:none; cursor:pointer; text-decoration:underline;">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const bcn = document.getElementById("bcnClick");
-        const popup = document.getElementById("popup");
-        const closePopup = document.getElementById("closePopup");
-
-        bcn.addEventListener("click", () => { popup.style.display = "flex"; });
-        closePopup.addEventListener("click", () => { popup.style.display = "none"; });
-        window.addEventListener("click", (e) => { if(e.target === popup) popup.style.display = "none"; });
-    </script>
-</body>
-</html>
+/* ANIMACIONES */
+.fade { opacity: 0; transform: translateY(20px); animation: fadeUp 1s forwards; }
+.delay1 { animation-delay: .3s; }
+.delay2 { animation-delay: .6s; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
