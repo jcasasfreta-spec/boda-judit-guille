@@ -7,7 +7,7 @@
 
   <title>Save the Date</title>
 
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,14 +24,55 @@
 
 <section class="hero">
 
-  <!-- MAPA REAL -->
+<div class="map-wrapper">
+
   <img class="map" src="images/world.svg">
 
-  <div class="sunset"></div>
+  <svg class="flight-svg" viewBox="0 0 1000 500">
 
-  <div class="overlay"></div>
+    <path
+      id="flightPath"
+      d="M290 445 C 340 180, 420 20, 490 140"
+      stroke="rgba(255,255,255,.7)"
+      stroke-width="2"
+      fill="none"
+      stroke-dasharray="8 10"
+    />
 
-  <div class="content">
+  </svg>
+
+  <svg class="plane-svg" viewBox="0 0 1000 500">
+
+    <text font-size="30" fill="white">
+      <textPath href="#flightPath" startOffset="-60%">
+        ✈
+        <animate
+          attributeName="startOffset"
+          from="0%"
+          to="100%"
+          dur="8s"
+          repeatCount="indefinite"
+        />
+      </textPath>
+    </text>
+
+  </svg>
+
+  <div class="point argentina">
+    <span>Buenos Aires</span>
+  </div>
+
+  <div class="point barcelona pulse" id="barcelonaPoint">
+    <span>Barcelona</span>
+  </div>
+
+</div>
+
+<div class="sunset"></div>
+
+<div class="overlay"></div>
+
+<div class="content">
 
     <p class="mini-title fade">
       SAVE THE DATE
@@ -40,49 +81,6 @@
     <h1 class="fade delay1">
       Judit & Guillermo
     </h1>
-
-    <!-- LINEA -->
-    <svg class="flight-svg" viewBox="0 0 1000 500">
-
-      <path
-    	id="flightPath"
-    	d="M290 445 C 340 180, 420 20, 490 140"
-    	stroke="rgba(255,255,255,.7)"
-    	stroke-width="2"
-    	fill="none"
-    	stroke-dasharray="8 10"
-       />
-
-    </svg>
-
-    <svg class="plane-svg" viewBox="0 0 1000 500">
-
-     <text font-size="30" fill="white">
-       <textPath href="#flightPath" startOffset="-60%">
-         ✈
-         <animate
-           attributeName="startOffset"
-           from="0%"
-           to="100%"
-           dur="8s"
-           repeatCount="indefinite"
-         />
-       </textPath>
-     </text>
-
-    </svg>
-
-    <!-- ARG -->
-    <div class="point argentina">
-      <span>Buenos Aires</span>
-    </div>
-
-    <!-- BCN -->
-    <div class="point barcelona pulse" id="barcelonaPoint">
-      <span>Barcelona</span>
-    </div>
-
-  </div>
 
 </section>
 
