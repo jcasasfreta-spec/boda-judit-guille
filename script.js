@@ -18,36 +18,28 @@ window.addEventListener("click", (e) => {
 
 });
 
-const weddingDate = new Date("July 17, 2027 18:00:00").getTime();
+const flightPath = document.getElementById("flightPath");
 
-function updateCountdown(){
+function updatePath(){
 
-  const now = new Date().getTime();
-  const distance = weddingDate - now;
+  if(window.innerWidth < 768){
 
-  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    flightPath.setAttribute(
+      "d",
+      "M220 420 C 260 260, 340 120, 470 140"
+    );
 
-  const hours = Math.floor(
-    (distance % (1000 * 60 * 60 * 24))
-    / (1000 * 60 * 60)
-  );
+  }else{
 
-  const minutes = Math.floor(
-    (distance % (1000 * 60 * 60))
-    / (1000 * 60)
-  );
+    flightPath.setAttribute(
+      "d",
+      "M290 445 C 340 180, 420 20, 490 140"
+    );
 
-  const seconds = Math.floor(
-    (distance % (1000 * 60))
-    / 1000
-  );
+  }
 
-  document.getElementById("days").innerHTML = days;
-  document.getElementById("hours").innerHTML = hours;
-  document.getElementById("minutes").innerHTML = minutes;
-  document.getElementById("seconds").innerHTML = seconds;
 }
 
-updateCountdown();
+updatePath();
 
-setInterval(updateCountdown,1000);
+window.addEventListener("resize", updatePath);
