@@ -1,126 +1,131 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+<!DOCTYPE html>
+<html lang="es">
 
-body {
-  background: #020617;
-  color: white;
-  overflow: hidden;
-  font-family: 'Montserrat', sans-serif;
-  height: 100vh;
-  height: 100svh;
-}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-.stars {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(1px 1px at 20px 30px, white, transparent),
-              radial-gradient(1px 1px at 150px 80px, white, transparent);
-  background-size: 250px 250px;
-  opacity: 0.3;
-  z-index: 0;
-}
+  <title>Save the Date</title>
 
-.sunset {
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent 60%, rgba(255,120,80,0.2) 100%);
-  z-index: 1;
-  pointer-events: none;
-}
+  <link rel="stylesheet" href="style.css">
 
-.hero {
-  position: relative;
-  height: 100svh;
-  width: 100vw;
-  overflow: hidden;
-}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-.map {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 45% center;
-  opacity: .25;
-  z-index: 1;
-}
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+</head>
 
-.content {
-  position: relative;
-  z-index: 10;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+<body>
 
-.text-box {
-  text-align: center;
-  z-index: 15;
-  pointer-events: none;
-}
+<div class="stars"></div>
 
-h1 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.5rem, 10vw, 6rem);
-  font-weight: 300;
-  text-shadow: 0 0 20px rgba(0,0,0,0.8);
-}
+<div class="cloud cloud1"></div>
+<div class="cloud cloud2"></div>
 
-.mini-title { letter-spacing: 10px; font-size: 0.8rem; margin-bottom: 10px; }
+<section class="hero">
 
-.flight-system {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 20;
-}
+  <!-- MAPA REAL -->
+  <img class="map" src="images/world.svg">
 
-/* POPUP */
-.popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-  padding: 20px;
-}
+  <div class="sunset"></div>
 
-.popup-content {
-  width: min(800px, 90vw);
-  background: white;
-  color: #020617;
-  border-radius: 20px;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
+  <div class="overlay"></div>
 
-@media (max-width: 768px) {
-  .popup-content { grid-template-columns: 1fr; }
-  .popup-content img { height: 200px; object-fit: cover; }
-}
+  <div class="content">
 
-.popup-text { padding: 40px; text-align: center; }
-.rsvp-button {
-  display: inline-block;
-  padding: 12px 25px;
-  background: #020617;
-  color: white;
-  text-decoration: none;
-  border-radius: 25px;
-  margin: 20px 0;
-}
+    <p class="mini-title fade">
+      SAVE THE DATE
+    </p>
 
-#closePopup { background: none; border: none; text-decoration: underline; cursor: pointer; }
+    <h1 class="fade delay1">
+      Judit & Guillermo
+    </h1>
 
-/* ANIMACIONES */
-.fade { opacity: 0; transform: translateY(20px); animation: fadeUp 1s forwards; }
-.delay1 { animation-delay: .3s; }
-.delay2 { animation-delay: .6s; }
-@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    <!-- LINEA -->
+    <svg class="flight-svg" viewBox="0 0 1000 500">
+
+      <path
+    	id="flightPath"
+    	d="M290 445 C 340 180, 420 20, 490 140"
+    	stroke="rgba(255,255,255,.7)"
+    	stroke-width="2"
+    	fill="none"
+    	stroke-dasharray="8 10"
+       />
+
+    </svg>
+
+    <svg class="plane-svg" viewBox="0 0 1000 500" preserveAspectRatio="none">
+
+     <text font-size="30" fill="white">
+       <textPath href="#flightPath" startOffset="-60%">
+         ✈
+         <animate
+           attributeName="startOffset"
+           from="0%"
+           to="100%"
+           dur="8s"
+           repeatCount="indefinite"
+         />
+       </textPath>
+     </text>
+
+    </svg>
+
+    <!-- ARG -->
+    <div class="point argentina">
+      <span>Buenos Aires</span>
+    </div>
+
+    <!-- BCN -->
+    <div class="point barcelona pulse" id="barcelonaPoint">
+      <span>Barcelona</span>
+    </div>
+
+  </div>
+
+</section>
+
+<div class="popup" id="popup">
+
+  <div class="popup-content">
+
+    <img src="images/image1.png">
+
+    <div class="popup-text">
+
+      <p class="popup-mini">
+        NOS CASAMOS
+      </p>
+
+      <h2>
+        Judit & Guillermo
+      </h2>
+
+      <p class="popup-date">
+        17 Julio 2027
+      </p>
+
+      <a
+        class="rsvp-button"
+        href="https://forms.gle/mNn5QGhmMoPXfbsSA"
+        target="_blank"
+      >
+        Confirmar asistencia
+      </a>
+
+      <button id="closePopup">
+        Cerrar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
